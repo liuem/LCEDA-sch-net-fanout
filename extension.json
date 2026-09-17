@@ -1,0 +1,76 @@
+{
+	"name": "lceda-sch-net-fanout",
+	"uuid": "9e600c31253b4e3a9245b0b655aef2c9",
+	"displayName": "原理图引脚网络扇出",
+	"description": "选中 MCU/FPGA 等多引脚原理图器件，一键为所有尚未连接网络的引脚创建以引脚名命名的网络（引出导线 + 网络标签/网络端口）：自动判断引脚朝向并沿朝向引出，支持电源地忽略名单、前后缀、长引脚名分段取段，标签列可直接放置或锚定鼠标位置。",
+	"version": "0.1.5",
+	"publisher": "liuem",
+	"engines": {
+		"eda": "^3.2.0"
+	},
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/liuem/LCEDA-sch-net-fanout"
+	},
+	"categories": "Schematic",
+	"keywords": [
+		"Net",
+		"NetLabel",
+		"Fanout",
+		"Schematic",
+		"MCU",
+		"Pin"
+	],
+	"images": {
+		"logo": "./images/logo.png",
+		"banner": "./images/banner.jpg"
+	},
+	"homepage": "https://github.com/liuem/LCEDA-sch-net-fanout",
+	"bugs": "https://github.com/liuem/LCEDA-sch-net-fanout/issues",
+	"activationEvents": {},
+	"entry": "./dist/index",
+	"dependentExtensions": {},
+	"headerMenus": {
+		"home": [],
+		"sch": [
+			{
+				"id": "sch-netfanout-menu",
+				"title": "引脚网络扇出",
+				"menuItems": [
+					{
+						"id": "snf-run",
+						"title": "创建元件引脚名网络",
+						"registerFn": "runNetFanout"
+					},
+					{
+						"id": "snf-preview",
+						"title": "预览（不修改画布）",
+						"registerFn": "previewNetFanout"
+					},
+					{
+						"id": "snf-cleanup",
+						"title": "删除本插件创建的网络/导线",
+						"registerFn": "cleanupNetFanout"
+					},
+					{
+						"id": "snf-diag",
+						"title": "诊断：输出引脚明细到控制台",
+						"registerFn": "dumpDiagnostics"
+					},
+					{
+						"id": "snf-settings",
+						"title": "设置面板...",
+						"registerFn": "openSettingsPanel"
+					},
+					{
+						"id": "snf-about",
+						"title": "关于",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"pcb": []
+	}
+}

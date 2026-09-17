@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>引脚网络扇出设置</title>
+<style>
+	:root { --bg:#1e222a; --panel:#262b36; --border:#3a4150; --text:#dfe4ec; --dim:#8b93a5; --accent:#4f8ef7; --ok:#3fb96f; --err:#e05c5c; }
+	* { box-sizing:border-box; }
+	html,body { margin:0; height:100%; background:var(--bg); color:var(--text);
+		font:13px/1.5 system-ui,"Segoe UI","Microsoft YaHei",sans-serif; }
+	.wrap { padding:12px 16px 64px; }
+	#banner { font-size:12px; padding:6px 10px; border-radius:6px; margin-bottom:10px; display:none; }
+	#banner.err { display:block; background:rgba(224,92,92,.12); color:var(--err); }
+	h3 { font-size:13px; color:var(--accent); margin:12px 0 6px; border-bottom:1px solid var(--border); padding-bottom:4px; }
+	.row { display:flex; align-items:center; gap:10px; margin:7px 0; }
+	.row label { width:200px; color:var(--dim); flex-shrink:0; }
+	input[type=text],input[type=number],select,textarea {
+		flex:1; padding:6px 9px; border:1px solid var(--border); border-radius:6px; background:var(--panel); color:var(--text); font-size:13px; outline:none; }
+	textarea { resize:vertical; min-height:56px; font-family:inherit; }
+	input:focus,select:focus,textarea:focus { border-color:var(--accent); }
+	.hint { font-size:11px; color:var(--dim); margin:-3px 0 6px 210px; }
+	.row label.switch { position:relative; width:38px; height:20px; flex-shrink:0; }
+	.switch input { opacity:0; width:0; height:0; }
+	.slider { position:absolute; inset:0; background:var(--border); border-radius:10px; cursor:pointer; transition:.2s; }
+	.slider:before { content:""; position:absolute; width:14px; height:14px; border-radius:50%; background:#fff; top:3px; left:3px; transition:.2s; }
+	.switch input:checked + .slider { background:var(--accent); }
+	.switch input:checked + .slider:before { transform:translateX(18px); }
+	#bar { position:fixed; bottom:0; left:0; right:0; display:flex; gap:8px; padding:10px 16px;
+		background:var(--panel); border-top:1px solid var(--border); }
+	#bar button { flex:1; padding:8px; border:1px solid var(--border); border-radius:6px; background:#303748; color:var(--text); cursor:pointer; }
+	#bar button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+	#toast { position:fixed; top:10px; left:50%; transform:translateX(-50%); padding:6px 16px; border-radius:14px;
+		background:var(--accent); color:#fff; font-size:12px; opacity:0; transition:.3s; pointer-events:none; }
+	#toast.show { opacity:1; }
+	#toast.ok { background:var(--ok); }
+	#toast.err { background:var(--err); }
+</style>
+</head>
+<body>
+<div class="wrap">
+	<div id="banner"></div>
+
+	<h3>网络名规则</h3>
+	<div class="row"><label>长引脚名分隔符</label><input type="text" id="separator" placeholder="/（留空=不分段）"></div>
+	<div class="row"><label>取分隔后第几段</label><input type="number" id="segmentIndex" step="1" placeholder="1；-1=最后一段"></div>
+	<div class="hint">例：引脚 "USART1_TX/PB6"，分隔符 "/" 取第 2 段 → PB6；取段越界自动钳到首/末段。</div>
+	<div class="row"><label>网络名前缀</label><input type="text" id="prefix" placeholder="如 MCU_（留空不加）"></div>
+	<div class="row"><label>网络名后缀</label><input type="text" id="suffix" placeholder="如 _N（留空不加）"></div>
+	<div class="hint">前后缀便于之后在网络管理器/搜索里按名称统一筛选处理。</div>
+
+	<h3>忽略名单</h3>
+	<div class="row"><label>忽略的网络/引脚名</label><textarea id="ignoreList" placeholder="逗号/分号/换行分隔，忽略大小写整词匹配，支持 * 通配"></textarea></div>
+	<div class="hint">命中名单的引脚不创建网络（对完整引脚名与分段后的基名都匹配）。默认已含常见电源/地与 NC。</div>
+	<div class="row"><label></label><button type="button" id="btnDefaultIgnore" style="flex:1; padding:6px; border:1px solid var(--border); border-radius:6px; background:#303748; color:var(--text); cursor:pointer;">填入默认电源地名单</button></div>
+
+	<h3>放置</h3>
+	<div class="row"><label>放置方式</label><select id="placement">
+		<option value="direct">直接放在元件引脚上（沿引脚朝向引出）</option>
+		<option value="follow">跟随鼠标（标签列锚定鼠标位置，成列对齐）</option>
+	</select></div>
+	<div class="hint">跟随鼠标：执行命令时鼠标在哪，标签列就锚定在哪（水平引脚引到鼠标所在竖列、垂直引脚引到鼠标所在横列，自动钳位到器件外）。</div>
+	<div class="row"><label>引出方向校正</label><select id="dirCorrection">
+		<option value="none">自动判向（默认）</option>
+		<option value="swapLR">左右互换（左脚朝右、右脚朝左）</option>
+		<option value="swapUD">上下互换</option>
+		<option value="rotate180">旋转 180°（四向全反）</option>
+	</select></div>
+	<div class="hint">自动判向按引脚朝向(优先)与引脚排布推断；个别符号样式判反时在此一键纠正，无需重装。</div>
+	<div class="row"><label>引出导线长度（直接放置）</label><input type="number" id="wireLength" min="10" max="200" step="10"></div>
+	<div class="hint">原理图单位，1 单位 = 10mil；默认 30（=300mil），按网格取整。跟随鼠标模式下同时作为标签列离器件的最小距离。</div>
+	<div class="row"><label>网络名可见形式</label><select id="labelStyle">
+		<option value="auto">自动（推荐：v4 定位标签 / v3 导线原生网络名）</option>
+		<option value="none">仅导线网络名（原生虚拟网络标签，全版本）</option>
+		<option value="netlabel">网络标签（需 EDA v4+，BETA）</option>
+		<option value="netport">网络端口（可 API 删除）</option>
+	</select></div>
+	<div class="hint">专业版的网络标签是虚拟的：导线带网络名后画布原生显示该名称，全版本可用；"网络标签"定位更精确但需 v4+（当前最新 V3.2 尚未提供）；"网络端口"任何版本可创建且「清理」可删除。</div>
+	<div class="row"><label>标签定位</label><select id="labelAlign">
+		<option value="auto">分侧对齐（推荐）</option>
+		<option value="native">编辑器原生位置</option>
+	</select></div>
+	<div class="hint">分侧对齐：右/下侧引出的标签从导线末端向外延伸（左下角锚定）；左/上侧引出的标签在导线末端向外结束（右下角等效锚定），两侧标签成列对齐、不压引脚。移动原生标签依赖属性图元接口，客户端不支持时自动保持原生位置。</div>
+
+	<h3>其他</h3>
+	<div class="row"><label>跳过"不连接(No ERC)"引脚</label><label class="switch"><input type="checkbox" id="skipNoConnect" checked><span class="slider"></span></label></div>
+	<div class="row"><label>网格对齐（原理图单位）</label><input type="number" id="snapGrid" min="1" max="100" step="1"></div>
+	<div class="hint">导线端点与标签列对齐到该网格；默认 10（=100mil）。</div>
+	<div class="row"><label>创建间隔毫秒（起步值）</label><input type="number" id="createIntervalMs" min="0" max="1000" step="10"></div>
+	<div class="hint">相邻创建之间的起步等待。画布对密集创建有限流，失败时节奏自动翻倍（封顶 1.2s）、连续成功自动回落，无需手调；默认 100ms。</div>
+</div>
+
+<div id="bar">
+	<button id="btnDefaults">恢复默认</button>
+	<button id="btnSave" class="primary">保存设置</button>
+</div>
+<div id="toast"></div>
+
+<script>
+(function () {
+	'use strict';
+	var CONFIG_KEY = 'schNetFanoutConfig';
+	var el = function (id) { return document.getElementById(id); };
+	var banner = el('banner');
+	var storage = null;
+
+	var DEFAULTS = {
+		ignoreList: 'VCC,VDD,VEE,VSS,GND,AGND,DGND,PGND,GNDA,VBAT,VBUS,VIN,VREF,VDDA,VSSA,AVDD,AVSS,3V3,5V,+3V3,+5V,1V8,2V5,NC',
+		prefix: '', suffix: '', separator: '/', segmentIndex: 1,
+		placement: 'direct', dirCorrection: 'none', wireLength: 30, labelStyle: 'auto', labelAlign: 'auto',
+		skipNoConnect: true, snapGrid: 10, createIntervalMs: 100,
+	};
+
+	var NUM_IDS = ['segmentIndex', 'wireLength', 'snapGrid', 'createIntervalMs'];
+	var BOOL_IDS = ['skipNoConnect'];
+
+	function clamp(v, min, max, dflt) {
+		v = Number(v);
+		if (!Number.isFinite(v))
+			return dflt;
+		return Math.max(min, Math.min(max, v));
+	}
+
+	function toast(text, cls) {
+		var t = el('toast');
+		t.textContent = text;
+		t.className = 'show ' + (cls || '');
+		setTimeout(function () { t.className = ''; }, 2600);
+	}
+
+	// ---- 通道：iframe 被注入 eda 时直接使用 sys_Storage（与 lceda-pcb-autofanout 同款方案）----
+	function initStorage() {
+		try {
+			if (typeof eda !== 'undefined' && eda && eda.sys_Storage) {
+				storage = eda.sys_Storage;
+				return true;
+			}
+		}
+		catch (e) { /* ignore */ }
+		banner.textContent = '当前客户端的 iframe 未注入 eda.sys_Storage，无法保存设置。请升级 EDA Pro 客户端到支持扩展 iframe 的版本后重试。';
+		banner.className = 'err';
+		el('btnSave').disabled = true;
+		el('btnDefaults').disabled = true;
+		return false;
+	}
+
+	function loadConfig() {
+		if (!storage)
+			return null;
+		try {
+			var raw = storage.getExtensionUserConfig(CONFIG_KEY);
+			var cfg = typeof raw === 'string' ? JSON.parse(raw) : raw;
+			return cfg && typeof cfg === 'object' ? cfg : {};
+		}
+		catch (e) { return {}; }
+	}
+
+	function fill(cfg) {
+		el('separator').value = cfg.separator !== undefined ? cfg.separator : DEFAULTS.separator;
+		el('prefix').value = cfg.prefix || '';
+		el('suffix').value = cfg.suffix || '';
+		el('ignoreList').value = cfg.ignoreList !== undefined ? cfg.ignoreList : DEFAULTS.ignoreList;
+		el('placement').value = cfg.placement || DEFAULTS.placement;
+		el('dirCorrection').value = cfg.dirCorrection || DEFAULTS.dirCorrection;
+		el('labelStyle').value = cfg.labelStyle || DEFAULTS.labelStyle;
+		el('labelAlign').value = cfg.labelAlign || DEFAULTS.labelAlign;
+		for (var i = 0; i < BOOL_IDS.length; i++) {
+			var k = BOOL_IDS[i];
+			el(k).checked = cfg[k] !== undefined ? !!cfg[k] : DEFAULTS[k];
+		}
+		for (var j = 0; j < NUM_IDS.length; j++) {
+			var n = NUM_IDS[j];
+			el(n).value = cfg[n] !== undefined ? cfg[n] : DEFAULTS[n];
+		}
+	}
+
+	function collect() {
+		var seg = Math.round(clamp(el('segmentIndex').value, -99, 99, DEFAULTS.segmentIndex));
+		if (seg === 0)
+			seg = DEFAULTS.segmentIndex;
+		var cfg = {
+			separator: el('separator').value,
+			prefix: el('prefix').value.trim(),
+			suffix: el('suffix').value.trim(),
+			ignoreList: el('ignoreList').value.trim(),
+			placement: el('placement').value === 'follow' ? 'follow' : 'direct',
+			dirCorrection: ['none', 'swapLR', 'swapUD', 'rotate180'].indexOf(el('dirCorrection').value) >= 0 ? el('dirCorrection').value : 'none',
+			labelStyle: ['auto', 'netlabel', 'netport', 'none'].indexOf(el('labelStyle').value) >= 0 ? el('labelStyle').value : 'auto',
+			labelAlign: el('labelAlign').value === 'native' ? 'native' : 'auto',
+			segmentIndex: seg,
+			wireLength: Math.round(clamp(el('wireLength').value, 10, 200, DEFAULTS.wireLength)),
+			snapGrid: Math.round(clamp(el('snapGrid').value, 1, 100, DEFAULTS.snapGrid)),
+			createIntervalMs: Math.round(clamp(el('createIntervalMs').value, 0, 1000, DEFAULTS.createIntervalMs)),
+		};
+		for (var i = 0; i < BOOL_IDS.length; i++)
+			cfg[BOOL_IDS[i]] = el(BOOL_IDS[i]).checked;
+		return cfg;
+	}
+
+	function save() {
+		if (!storage)
+			return false;
+		var cfg = collect();
+		try {
+			// 双写：sys_Storage（扩展读取）+ localStorage（本页面快速回显）
+			storage.setExtensionUserConfig(CONFIG_KEY, JSON.stringify(cfg));
+			localStorage.setItem('lceda-sch-net-fanout.config', JSON.stringify(cfg));
+			fill(cfg); // 回显钳位后的值
+			return true;
+		}
+		catch (e) {
+			toast('保存失败：' + e, 'err');
+			return false;
+		}
+	}
+
+	el('btnSave').onclick = function () {
+		if (save())
+			toast('✓ 已保存（下次执行扇出时生效）', 'ok');
+	};
+
+	el('btnDefaults').onclick = function () {
+		fill(DEFAULTS);
+		toast('已填入默认值，点击「保存设置」生效');
+	};
+
+	el('btnDefaultIgnore').onclick = function () {
+		el('ignoreList').value = DEFAULTS.ignoreList;
+		toast('已填入默认电源地名单，记得「保存设置」');
+	};
+
+	if (initStorage()) {
+		var saved = loadConfig();
+		var local = null;
+		try { local = JSON.parse(localStorage.getItem('lceda-sch-net-fanout.config') || 'null'); }
+		catch (e) { /* ignore */ }
+		fill(saved && Object.keys(saved).length ? saved : (local || DEFAULTS));
+	}
+})();
+</script>
+</body>
+</html>
