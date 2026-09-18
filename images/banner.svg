@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="540" viewBox="0 0 1280 540">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fafc"/>
+      <stop offset="1" stop-color="#e7f0f7"/>
+    </linearGradient>
+    <pattern id="dots" width="56" height="56" patternUnits="userSpaceOnUse">
+      <circle cx="28" cy="28" r="2.2" fill="#2b6ca3" opacity="0.07"/>
+    </pattern>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#59c2ff"/>
+      <stop offset="1" stop-color="#7ee787"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 浅色背景 + 细网格点 -->
+  <rect x="0" y="0" width="1280" height="540" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1280" height="540" fill="url(#dots)"/>
+
+  <!-- 左侧标题区 -->
+  <g font-family="Microsoft YaHei UI, Microsoft YaHei, PingFang SC, sans-serif">
+    <rect x="76" y="196" width="96" height="10" rx="5" fill="url(#accent)"/>
+    <text x="74" y="286" font-size="62" font-weight="700" fill="#16324e">原理图引脚网络扇出</text>
+    <text x="76" y="336" font-size="28" font-weight="600" fill="#40648a">MCU / FPGA 多引脚网络一键创建</text>
+    <text x="76" y="380" font-size="21" fill="#7e97ad">嘉立创EDA专业版扩展 · LCEDA-sch-net-fanout</text>
+  </g>
+
+  <!-- 右侧插画：芯片 + 右向扇出网络（延续 logo 视觉语言） -->
+  <g>
+    <!-- 芯片本体 -->
+    <rect x="740" y="150" width="180" height="240" rx="20" fill="#ffffff" stroke="#2b6ca3" stroke-width="5"/>
+    <circle cx="772" cy="182" r="8" fill="#e7f0f7" stroke="#2b6ca3" stroke-width="3"/>
+    <text x="830" y="284" font-family="Microsoft YaHei UI, Microsoft YaHei, sans-serif" font-size="52" font-weight="700" fill="#16324e" text-anchor="middle">U1</text>
+
+    <!-- 左侧短引脚（示意更多引脚） -->
+    <g stroke="#9db8cf" stroke-width="7" stroke-linecap="round">
+      <path d="M 740 195 H 706" fill="none"/>
+      <path d="M 740 270 H 706" fill="none"/>
+      <path d="M 740 345 H 706" fill="none"/>
+    </g>
+    <circle cx="702" cy="195" r="7" fill="#9db8cf"/>
+    <circle cx="702" cy="270" r="7" fill="#9db8cf"/>
+    <circle cx="702" cy="345" r="7" fill="#9db8cf"/>
+
+    <!-- 右侧引脚 + 扇出导线 + 网络标签胶囊 -->
+    <g stroke="#9db8cf" stroke-width="7" stroke-linecap="round">
+      <path d="M 920 195 H 958" fill="none"/>
+      <path d="M 920 270 H 958" fill="none"/>
+      <path d="M 920 345 H 958" fill="none"/>
+    </g>
+    <path d="M 958 195 H 1002" stroke="#2f9de3" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M 958 270 H 1002" stroke="#f59f2e" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M 958 345 H 1002" stroke="#4cb963" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <circle cx="958" cy="195" r="10" fill="#2f9de3"/>
+    <circle cx="958" cy="270" r="10" fill="#f59f2e"/>
+    <circle cx="958" cy="345" r="10" fill="#4cb963"/>
+
+    <g font-family="Segoe UI, Consolas, Arial, sans-serif" font-weight="700" text-anchor="middle">
+      <rect x="1004" y="166" width="188" height="58" rx="16" fill="#2f9de3" opacity="0.12"/>
+      <rect x="1004" y="166" width="188" height="58" rx="16" fill="none" stroke="#2f9de3" stroke-width="4"/>
+      <text x="1098" y="205" font-size="32" fill="#1c6fa8">PA0</text>
+
+      <rect x="1004" y="241" width="188" height="58" rx="16" fill="#f59f2e" opacity="0.12"/>
+      <rect x="1004" y="241" width="188" height="58" rx="16" fill="none" stroke="#f59f2e" stroke-width="4"/>
+      <text x="1098" y="280" font-size="32" fill="#b26f0a">PB6</text>
+
+      <rect x="1004" y="316" width="188" height="58" rx="16" fill="#4cb963" opacity="0.12"/>
+      <rect x="1004" y="316" width="188" height="58" rx="16" fill="none" stroke="#4cb963" stroke-width="4"/>
+      <text x="1098" y="355" font-size="32" fill="#2e7d44">RX1</text>
+    </g>
+  </g>
+</svg>
