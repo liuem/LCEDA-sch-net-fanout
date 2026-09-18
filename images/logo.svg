@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e2438"/>
+      <stop offset="1" stop-color="#1a3d5c"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#24507a"/>
+      <stop offset="1" stop-color="#1a3f63"/>
+    </linearGradient>
+    <pattern id="dots" width="64" height="64" patternUnits="userSpaceOnUse">
+      <circle cx="32" cy="32" r="2.5" fill="#ffffff" opacity="0.06"/>
+    </pattern>
+  </defs>
+
+  <!-- 背景：圆角深藏青 + 原理图网格点 -->
+  <rect x="0" y="0" width="1024" height="1024" rx="208" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1024" height="1024" rx="208" fill="url(#dots)"/>
+
+  <!-- 左侧扇出网络（导线 + 网络标签胶囊） -->
+  <g font-family="Segoe UI, Arial, sans-serif" font-weight="700" text-anchor="middle">
+    <!-- 第一行 cyan PA0 -->
+    <path d="M 292 380 H 246" stroke="#59c2ff" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <circle cx="292" cy="380" r="11" fill="#59c2ff"/>
+    <rect x="52" y="344" width="196" height="72" rx="20" fill="#59c2ff" opacity="0.16"/>
+    <rect x="52" y="344" width="196" height="72" rx="20" fill="none" stroke="#59c2ff" stroke-width="4"/>
+    <text x="150" y="394" font-size="44" fill="#eaf6ff">PA0</text>
+    <!-- 第二行 orange PA1 -->
+    <path d="M 292 512 H 246" stroke="#ffb454" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <circle cx="292" cy="512" r="11" fill="#ffb454"/>
+    <rect x="52" y="476" width="196" height="72" rx="20" fill="#ffb454" opacity="0.16"/>
+    <rect x="52" y="476" width="196" height="72" rx="20" fill="none" stroke="#ffb454" stroke-width="4"/>
+    <text x="150" y="526" font-size="44" fill="#fff4e0">PA1</text>
+    <!-- 第三行 green PB6 -->
+    <path d="M 292 644 H 246" stroke="#7ee787" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <circle cx="292" cy="644" r="11" fill="#7ee787"/>
+    <rect x="52" y="608" width="196" height="72" rx="20" fill="#7ee787" opacity="0.16"/>
+    <rect x="52" y="608" width="196" height="72" rx="20" fill="none" stroke="#7ee787" stroke-width="4"/>
+    <text x="150" y="658" font-size="44" fill="#eaffe9">PB6</text>
+  </g>
+
+  <!-- 右侧扇出网络 -->
+  <g font-family="Segoe UI, Arial, sans-serif" font-weight="700" text-anchor="middle">
+    <path d="M 732 380 H 778" stroke="#59c2ff" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <circle cx="732" cy="380" r="11" fill="#59c2ff"/>
+    <rect x="776" y="344" width="196" height="72" rx="20" fill="#59c2ff" opacity="0.16"/>
+    <rect x="776" y="344" width="196" height="72" rx="20" fill="none" stroke="#59c2ff" stroke-width="4"/>
+    <text x="874" y="394" font-size="44" fill="#eaf6ff">PB0</text>
+
+    <path d="M 732 512 H 778" stroke="#ffb454" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <circle cx="732" cy="512" r="11" fill="#ffb454"/>
+    <rect x="776" y="476" width="196" height="72" rx="20" fill="#ffb454" opacity="0.16"/>
+    <rect x="776" y="476" width="196" height="72" rx="20" fill="none" stroke="#ffb454" stroke-width="4"/>
+    <text x="874" y="526" font-size="44" fill="#fff4e0">PB7</text>
+
+    <path d="M 732 644 H 778" stroke="#7ee787" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <circle cx="732" cy="644" r="11" fill="#7ee787"/>
+    <rect x="776" y="608" width="196" height="72" rx="20" fill="#7ee787" opacity="0.16"/>
+    <rect x="776" y="608" width="196" height="72" rx="20" fill="none" stroke="#7ee787" stroke-width="4"/>
+    <text x="874" y="658" font-size="44" fill="#eaffe9">RX1</text>
+  </g>
+
+  <!-- 中央芯片（引脚短柱 + 本体 + 位号） -->
+  <g stroke="#cfe3f4" stroke-width="9" stroke-linecap="round">
+    <path d="M 352 380 H 292" fill="none"/>
+    <path d="M 352 512 H 292" fill="none"/>
+    <path d="M 352 644 H 292" fill="none"/>
+    <path d="M 672 380 H 732" fill="none"/>
+    <path d="M 672 512 H 732" fill="none"/>
+    <path d="M 672 644 H 732" fill="none"/>
+  </g>
+  <rect x="352" y="262" width="320" height="500" rx="28" fill="url(#chip)" stroke="#59c2ff" stroke-width="5"/>
+  <!-- 1 脚标记缺口 -->
+  <circle cx="392" cy="302" r="10" fill="#0e2438" stroke="#59c2ff" stroke-width="3"/>
+  <text x="512" y="480" font-family="Segoe UI, Arial, sans-serif" font-weight="700" font-size="96" fill="#eaf6ff" text-anchor="middle">U1</text>
+  <text x="512" y="580" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="40" fill="#8fc6e8" text-anchor="middle" letter-spacing="6">MCU/FPGA</text>
+</svg>
